@@ -1,0 +1,17 @@
+.env
+*.env
+local_settings.py
+__pycache__/
+*.pyc
+
+venv/
+.venv/
+env/
+
+node_modules/
+dist/
+.eslintcache
+
+*.db
+*.sqlite3
+*.log 

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: ast_analysis_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root1234
+      POSTGRES_DB: ai_reviewer_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: ast_analysis_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:root1234@db:5432/ai_reviewer_db
+      - GEMINI_API_KEY="ВАШ_API_КЛЮЧ"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: ast_analysis_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
